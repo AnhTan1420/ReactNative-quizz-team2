@@ -1,6 +1,11 @@
 import 'react-native-gesture-handler'
-import { Text } from 'react-native'
+import { NavigationContainer } from '@react-navigation/native'
+import { AuthStackNavigator } from './navigators/AuthStackNavigator'
 
 export default function App() {
-  return <Text>Quizz Test</Text>
+  return (
+    <NavigationContainer>
+      <AuthStackNavigator />
+    </NavigationContainer>
+  )
 }
