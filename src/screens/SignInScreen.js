@@ -1,23 +1,23 @@
 import React, { useState } from 'react'
-import { View, Text, SafeAreaView, Alert } from 'react-native'
+import { View, Text, SafeAreaView } from 'react-native'
 import { FormButton, FormInput } from '../components/Forms'
 import { COLORS } from '../constants/theme'
 
-export const SignUpScreen = ({ navigation }) => {
+export const SignInScreen = ({ navigation }) => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
   const handleOnSubmit = () => {
     if (email != '' && password != '') {
-      console.log({ email, password })
+      console.log({ emai, password })
     }
   }
 
   return (
     <SafeAreaView
       style={{
-        flex: 1,
         backgroundColor: COLORS.white,
+        flex: 1,
         alignItems: 'center',
         justifyContent: 'flex-start',
         padding: 20,
@@ -32,7 +32,7 @@ export const SignUpScreen = ({ navigation }) => {
           marginVertical: 32,
         }}
       >
-        Sign Up
+        Sign In
       </Text>
 
       {/* Email */}
@@ -55,21 +55,20 @@ export const SignUpScreen = ({ navigation }) => {
 
       {/* Submit button */}
       <FormButton
-        labelText='Sign up'
+        labelText='Submit'
         handleOnPress={handleOnSubmit}
         style={{ width: '100%' }}
       />
-
       {/* Footer */}
       <View
         style={{ flexDirection: 'row', alignItems: 'center', marginTop: 20 }}
       >
-        <Text>Already have an account?</Text>
+        <Text>Don't have an account?</Text>
         <Text
           style={{ marginLeft: 4, color: COLORS.primary }}
-          onPress={() => navigation.navigate('SignInScreen')}
+          onPress={() => navigation.navigate('SignUpScreen')}
         >
-          Sign in
+          Create account
         </Text>
       </View>
     </SafeAreaView>
