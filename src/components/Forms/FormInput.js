@@ -7,6 +7,7 @@ export const FormInput = ({
   placeholderText = '',
   onChangeText = null,
   value = null,
+  error = false,
   ...rest
 }) => {
   return (
@@ -15,7 +16,7 @@ export const FormInput = ({
       <TextInput
         style={{
           padding: 10,
-          borderColor: COLORS.black + '20',
+          borderColor: !error ? COLORS.black + '20' : 'red',
           borderWidth: 1,
           width: '100%',
           borderRadius: 5,
@@ -26,6 +27,18 @@ export const FormInput = ({
         value={value}
         {...rest}
       />
+      {!!error && (
+        <Text
+          style={{
+            fontSize: 12,
+            color: 'red',
+            marginTop: '4px',
+            textAlign: 'left',
+          }}
+        >
+          {error.message}
+        </Text>
+      )}
     </View>
   )
 }

@@ -1,3 +1,2 @@
-export * from "./SignInScreen";
-export * from "./SignUpScreen";
-export * from "./CreateQuizScreen";
+export * from './Auth'
+export * from './CreateQuizScreen'
