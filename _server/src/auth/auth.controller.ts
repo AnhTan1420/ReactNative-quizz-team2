@@ -20,7 +20,7 @@ export class AuthController {
   // Register
   @Post('register')
   register(@Body() userDto: CreateUserDto): Promise<AuthReponseDto> {
-    return this.authService.login(userDto);
+    return this.authService.register(userDto);
   }
 
   @UseGuards(AuthGuard('jwt-refresh'))

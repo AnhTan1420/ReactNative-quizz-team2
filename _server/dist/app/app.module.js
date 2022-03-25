@@ -11,6 +11,8 @@ const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const mongoose_1 = require("@nestjs/mongoose");
 const auth_module_1 = require("../auth/auth.module");
+const questions_module_1 = require("../questions/questions.module");
+const quizzes_module_1 = require("../quizzes/quizzes.module");
 const user_module_1 = require("../user/user.module");
 let AppModule = class AppModule {
 };
@@ -23,6 +25,8 @@ AppModule = __decorate([
             mongoose_1.MongooseModule.forRoot(process.env.MONGODB_URI),
             user_module_1.UserModule,
             auth_module_1.AuthModule,
+            quizzes_module_1.QuizzesModule,
+            questions_module_1.QuestionsModule,
         ],
     })
 ], AppModule);

@@ -27,7 +27,7 @@ let AuthController = class AuthController {
         return this.authService.login(loginDto);
     }
     register(userDto) {
-        return this.authService.login(userDto);
+        return this.authService.register(userDto);
     }
     refreshToken(userId, rfToken) {
         return this.authService.refreshTokens(userId, rfToken);
