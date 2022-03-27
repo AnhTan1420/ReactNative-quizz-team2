@@ -31,6 +31,33 @@ const CreateQuizScreen = ({ navigation }) => {
 
   const { token } = useSelector(authSelector);
   const dispatch = useDispatch();
+  const onQuizSave = async (quizData) => {
+    try {
+      setLoading(true);
+      // Call api create quiz
+      const { data } = await axiosInstance.post("/quizzes", quizData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      // dispatch create quiz action
+      dispatch(createQuiz(data));
+
+      // Navige add question screen
+      navigation.navigate("AddQuestionScreen", {
+        quizId: data.id,
+        quizTitle: data.title,
+      });
+      setLoading(false);
+    } catch (error) {
+      const message = error?.response
+        ? error?.response.data.message
+        : error.message;
+      setError(message);
+      setLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView
@@ -90,6 +117,7 @@ const CreateQuizScreen = ({ navigation }) => {
       <FormButton
         labelText="Save Quiz"
         type="submit"
+        handleOnPress={handleSubmit(onQuizSave)}
         style={{ width: "100%" }}
       />
 
