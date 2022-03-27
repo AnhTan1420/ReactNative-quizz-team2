@@ -10,8 +10,9 @@ export const COLORS = {
 
   black: '#171717',
   white: '#FFFFFF',
-  background: '#f4f4f4',
+  background: '#252c4a',
   border: '#F5F5F7',
+  play: '#49CC96'
 }
 
 export const SIZES = {
