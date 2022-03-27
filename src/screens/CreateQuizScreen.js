@@ -81,6 +81,23 @@ const CreateQuizScreen = ({ navigation }) => {
         Create Quiz
       </Text>
 
+      {/* Error message */}
+      {!!error && (
+        <Text
+          style={{
+            fontSize: 14,
+            textAlign: "center",
+            color: "white",
+            marginBottom: 12,
+            padding: 3,
+            borderRadius: 3,
+            backgroundColor: "rgba(255, 0, 67, 0.55)",
+          }}
+        >
+          {error}
+        </Text>
+      )}
+
       {/* Title */}
       <Controller
         control={control}
