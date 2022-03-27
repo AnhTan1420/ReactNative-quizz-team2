@@ -1,16 +1,36 @@
-import React from "react";
+import React, { useState } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { useSelector, useDispatch } from "react-redux";
 import { Text, SafeAreaView, ToastAndroid } from "react-native";
 import { COLORS } from "../constants/theme";
-import FormInput from "../components/Forms/FormInput";
-import FormButton from "../components/Forms/FormButton";
+import { FormButton, FormInput } from "../../components";
+import { axiosInstance } from "../../utils/axiosInstance";
+import { authSelector } from "../../redux/selector";
+import { createQuiz } from "../../redux/actions";
+
+const quizSchema = yup.object({
+  title: yup.string().required().label("Title"),
+  description: yup.string().label("Descriptionn"),
+});
+
+const defaultValues = {
+  title: "",
+  description: "",
+};
 
 const CreateQuizScreen = ({ navigation }) => {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ defaultValues, resolver: yupResolver(quizSchema) });
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  setTitle("");
-  setDescription("");
-  ToastAndroid.show("Quiz Saved", ToastAndroid.SHORT);
+  const { token } = useSelector(authSelector);
+  const dispatch = useDispatch();
 
   return (
     <SafeAreaView
@@ -35,23 +55,43 @@ const CreateQuizScreen = ({ navigation }) => {
       </Text>
 
       {/* Title */}
-      <FormInput
-        labelText="Title"
-        placeholderText="enter quiz title"
-        onChangeText={(val) => setTitle(val)}
-        value={title}
+      <Controller
+        control={control}
+        name="title"
+        render={({ field: { onChange, onBlur, value } }) => (
+          <FormInput
+            labelText="Title"
+            placeholderText="Enter quiz title"
+            value={value}
+            onBlur={onBlur}
+            onChangeText={onChange}
+            error={errors.title}
+          />
+        )}
       />
 
       {/* Description */}
-      <FormInput
-        labelText="Description"
-        placeholderText="enter quiz description"
-        onChangeText={(val) => setDescription(val)}
-        value={description}
+      <Controller
+        control={control}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <FormInput
+            labelText="Description"
+            placeholderText="Enter quiz description"
+            value={value}
+            onBlur={onBlur}
+            onChangeText={onChange}
+            error={errors.description}
+          />
+        )}
+        name="description"
       />
 
       {/* Submit button */}
-      <FormButton labelText="Save Quiz" />
+      <FormButton
+        labelText="Save Quiz"
+        type="submit"
+        style={{ width: "100%" }}
+      />
 
       <FormButton
         labelText="Done & Go Home"
