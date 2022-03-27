@@ -1,127 +1,264 @@
-import React, {useState} from 'react';
+import React, { useState, useEffect } from 'react'
+import { useForm, Controller } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import * as yup from 'yup'
 import {
-  View,
   Text,
-  KeyboardAvoidingView,
-  ScrollView,
-} from 'react-native';
-import {COLORS} from '../constants/theme';
+  SafeAreaView,
+  TouchableOpacity,
+  Image,
+  Platform,
+} from 'react-native'
+import * as ImagePicker from 'expo-image-picker'
+import { FormButton, FormInput } from '../../components'
+import { COLORS } from '../../constants/theme'
+import { useSelector, useDispatch } from 'react-redux'
+import { authSelector } from '../../redux/selector'
+import { axiosInstance } from '../../utils/axiosInstance'
 
-const AddQuestionScreen = ({navigation, route}) => {
-  const [currentQuizId, setCurrentQuizId] = useState(
-    route.params.currentQuizId,
-  );
-  const [currentQuizTitle, setCurrentQuizTitle] = useState(
-    route.params.currentQuizTitle,
-  );
+const questionSchema = yup.object({
+  question: yup.string().required().label('Question'),
+  correctAnswer: yup.string().required().label('Correct answer'),
+  optionOne: yup.string().label('Option 1').required(),
+  optionTwo: yup.string().label('Option 2'),
+  optionThree: yup.string().label('Option 3'),
+})
 
-  const [question, setQuestion] = useState('');
+const defaultValues = {
+  question: '',
+  correctAnswer: '',
+  optionOne: '',
+  optionTwo: '',
+  optionThree: '',
+}
 
-  const [correctAnswer, setCorrectAnswer] = useState('');
-  const [optionTwo, setOptionTwo] = useState('');
-  const [optionThree, setOptionThree] = useState('');
-  const [optionFour, setOptionFour] = useState('');
+export const AddQuestionScreen = ({ navigation, route }) => {
+  const [quizId, setQuizId] = useState(route.params.quizId)
+  const [quizTitle, setQuizTitle] = useState(route.params.quizTitle)
 
-  const handleQuestionSave = () => {};
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({ defaultValues, resolver: yupResolver(questionSchema) })
+  const [imageUri, setImageUri] = useState('')
 
+  const [error, setError] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  const dispatch = useDispatch()
+  const onQuestionSave = async ({ question, correctAnswer, ...options }) => {
+    try {
+      setLoading(true)
+      // Call api create quiz
+      const { optionOne, optionTwo, optionThree } = options
+
+      const { data } = await axiosInstance.post('/questions', {
+        quiz: quizId,
+        question,
+        correctAnswer,
+        incorrectAnswers: [optionOne, optionTwo, optionThree],
+        image: imageUri,
+      })
+
+      console.log({ data })
+      setImageUri('')
+      reset()
+      // dispatch create quiz action
+      // dispatch(createQuiz(data))
+
+      setLoading(false)
+    } catch (error) {
+      const message = error?.response
+        ? error?.response.data.message
+        : error.message
+      setError(message)
+      setLoading(false)
+    }
+  }
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    })
+
+    console.log({ result })
+
+    if (!result.cancelled) {
+      setImageUri(result.uri)
+    }
+  }
 
   return (
-    <KeyboardAvoidingView
+    <SafeAreaView
       style={{
+        backgroundColor: COLORS.white,
         flex: 1,
-      }}>
-      <ScrollView
+        justifyContent: 'flex-start',
+        padding: 20,
+      }}
+    >
+      {/* Header */}
+      <Text
         style={{
-          flex: 1,
-          backgroundColor: COLORS.white,
-        }}>
-        <View style={{padding: 20}}>
-          <Text
-            style={{fontSize: 20, textAlign: 'center', color: COLORS.black}}>
-            Add Question
-          </Text>
-          <Text style={{textAlign: 'center', marginBottom: 20}}>
-            For {currentQuizTitle}
-          </Text>
+          fontSize: 24,
+          color: COLORS.black,
+          fontWeight: 'bold',
+          marginVertical: 32,
+          textAlign: 'center',
+        }}
+      >
+        Create Quiz
+      </Text>
 
+      {/* Error message */}
+      {!!error && (
+        <Text
+          style={{
+            fontSize: 14,
+            textAlign: 'center',
+            color: 'white',
+            marginBottom: 12,
+            padding: 3,
+            borderRadius: 3,
+            backgroundColor: 'rgba(255, 0, 67, 0.55)',
+          }}
+        >
+          {error}
+        </Text>
+      )}
+
+      {/* Question */}
+      <Controller
+        control={control}
+        name='question'
+        render={({ field: { onChange, onBlur, value } }) => (
           <FormInput
-            labelText="Question"
-            placeholderText="enter question"
-            onChangeText={val => setQuestion(val)}
-            value={question}
+            labelText='Question'
+            placeholderText='Enter question'
+            value={value}
+            onBlur={onBlur}
+            onChangeText={onChange}
+            error={errors.question}
           />
+        )}
+      />
 
-          {/* Image upload */}
+      {imageUri == '' ? (
+        <TouchableOpacity
+          style={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 28,
+            backgroundColor: COLORS.primary + '20',
+          }}
+          onPress={pickImage}
+        >
+          <Text style={{ opacity: 0.5, color: COLORS.primary }}>
+            + add image
+          </Text>
+        </TouchableOpacity>
+      ) : (
+        <Image
+          source={{
+            uri: imageUri,
+          }}
+          resizeMode={'cover'}
+          style={{
+            width: '100%',
+            height: 200,
+            borderRadius: 5,
+          }}
+        />
+      )}
 
-          {imageUri == '' ? (
-            <TouchableOpacity
-              style={{
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: 28,
-                backgroundColor: COLORS.primary + '20',
-              }}
-              onPress={selectImage}>
-              <Text style={{opacity: 0.5, color: COLORS.primary}}>
-                + add image
-              </Text>
-            </TouchableOpacity>
-          ) : (
-            <Image
-              source={{
-                uri: imageUri,
-              }}
-              resizeMode={'cover'}
-              style={{
-                width: '100%',
-                height: 200,
-                borderRadius: 5,
-              }}
-            />
-          )}
-
-          {/* Options */}
-          <View style={{marginTop: 30}}>
-            <FormInput
-              labelText="Correct Answer"
-              onChangeText={val => setCorrectAnswer(val)}
-              value={correctAnswer}
-            />
-            <FormInput
-              labelText="Option 2"
-              onChangeText={val => setOptionTwo(val)}
-              value={optionTwo}
-            />
-            <FormInput
-              labelText="Option 3"
-              onChangeText={val => setOptionThree(val)}
-              value={optionThree}
-            />
-            <FormInput
-              labelText="Option 4"
-              onChangeText={val => setOptionFour(val)}
-              value={optionFour}
-            />
-          </View>
-          <FormButton
-            labelText="Save Question"
-            handleOnPress={handleQuestionSave}
+      {/* Correct answer */}
+      <Controller
+        control={control}
+        name='correctAnswer'
+        render={({ field: { onChange, onBlur, value } }) => (
+          <FormInput
+            labelText='Correct Answer'
+            placeholderText='Enter correct answer'
+            value={value}
+            onBlur={onBlur}
+            onChangeText={onChange}
+            error={errors.correctAnswer}
           />
-          <FormButton
-            labelText="Done & Go Home"
-            isPrimary={false}
-            handleOnPress={() => {
-              setCurrentQuizId('');
-              navigation.navigate('HomeScreen');
-            }}
-            style={{
-              marginVertical: 20,
-            }}
-          />
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
-  );
-};
+        )}
+      />
 
-export default AddQuestionScreen;
+      {/* Option 1 */}
+      <Controller
+        control={control}
+        name='optionOne'
+        render={({ field: { onChange, onBlur, value } }) => (
+          <FormInput
+            labelText='Option 1'
+            placeholderText='Enter option 1'
+            value={value}
+            onBlur={onBlur}
+            onChangeText={onChange}
+            error={errors.optionOne}
+          />
+        )}
+      />
+
+      {/* Option 1 */}
+      <Controller
+        control={control}
+        name='optionTwo'
+        render={({ field: { onChange, onBlur, value } }) => (
+          <FormInput
+            labelText='Option 2'
+            placeholderText='Enter option 2'
+            value={value}
+            onBlur={onBlur}
+            onChangeText={onChange}
+            error={errors.optionTwo}
+          />
+        )}
+      />
+
+      {/* Option 3 */}
+      <Controller
+        control={control}
+        name='optionThree'
+        render={({ field: { onChange, onBlur, value } }) => (
+          <FormInput
+            labelText='Option 3'
+            placeholderText='Enter option 3'
+            value={value}
+            onBlur={onBlur}
+            onChangeText={onChange}
+            error={errors.optionThree}
+          />
+        )}
+      />
+
+      {/* Submit button */}
+      <FormButton
+        labelText='Save Question'
+        type='submit'
+        handleOnPress={handleSubmit(onQuestionSave)}
+        style={{ width: '100%' }}
+      />
+
+      <FormButton
+        labelText='Done & Go Home'
+        isPrimary={false}
+        handleOnPress={() => {
+          setQuizId('')
+          navigation.navigate('HomeScreen')
+        }}
+        style={{
+          marginVertical: 20,
+        }}
+      />
+    </SafeAreaView>
+  )
+}
