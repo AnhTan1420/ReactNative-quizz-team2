@@ -17,14 +17,16 @@ const CreateQuizScreen = ({ navigation }) => {
       style={{
         flex: 1,
         backgroundColor: COLORS.white,
+        justifyContent: "flex-start",
         padding: 20,
       }}
     >
+      {/* Header */}
       <Text
         style={{
-          fontSize: 20,
+          fontSize: 24,
           textAlign: "center",
-          marginVertical: 20,
+          marginVertical: 32,
           fontWeight: "bold",
           color: COLORS.black,
         }}
@@ -32,12 +34,15 @@ const CreateQuizScreen = ({ navigation }) => {
         Create Quiz
       </Text>
 
+      {/* Title */}
       <FormInput
         labelText="Title"
         placeholderText="enter quiz title"
         onChangeText={(val) => setTitle(val)}
         value={title}
       />
+
+      {/* Description */}
       <FormInput
         labelText="Description"
         placeholderText="enter quiz description"
@@ -45,7 +50,19 @@ const CreateQuizScreen = ({ navigation }) => {
         value={description}
       />
 
+      {/* Submit button */}
       <FormButton labelText="Save Quiz" />
+
+      <FormButton
+        labelText="Done & Go Home"
+        isPrimary={false}
+        handleOnPress={() => {
+          navigation.navigate("HomeScreen");
+        }}
+        style={{
+          marginVertical: 20,
+        }}
+      />
     </SafeAreaView>
   );
 };
