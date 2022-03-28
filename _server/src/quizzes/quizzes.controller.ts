@@ -1,44 +1,42 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  HttpCode,
-} from '@nestjs/common';
-import { QuizzesService } from './quizzes.service';
-import { CreateQuizDto } from './dto/create-quiz.dto';
-import { UpdateQuizDto } from './dto/update-quiz.dto';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import mongoose from 'mongoose';
+import { Document } from 'mongoose';
+import { Category } from 'src/categories/schemas/category.schema';
+import { User } from 'src/user/schemas/user.schema';
 
-@Controller('quizzes')
-export class QuizzesController {
-  constructor(private readonly quizzesService: QuizzesService) {}
+export type QuizDocument = Quiz & Document;
 
-  @Post()
-  create(@Body() createQuizDto: CreateQuizDto) {
-    return this.quizzesService.create(createQuizDto);
-  }
+@Schema({
+  timestamps: true,
+  toJSON: {
+    transform(doc, ret) {
+      ret.id = ret._id.toString();
+      delete ret._id;
+      delete ret.__v;
+      return ret;
+    },
+  },
+})
+export class Quiz {
+  @Prop({ required: true, type: String, trim: true })
+  title: string;
 
-  @Get()
-  findAll() {
-    return this.quizzesService.findAll();
-  }
+  @Prop({ type: String, trim: true })
+  description: string;
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.quizzesService.findOne(id);
-  }
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: Category.name,
+    required: true,
+  })
+  category: Category;
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateQuizDto: UpdateQuizDto) {
-    return this.quizzesService.update(id, updateQuizDto);
-  }
-
-  @HttpCode(204)
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.quizzesService.remove(id);
-  }
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: User.name,
+    required: true,
+  })
+  createdBy: User;
 }
+
+export const QuizSchema = SchemaFactory.createForClass(Quiz);
