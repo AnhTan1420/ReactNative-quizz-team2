@@ -9,7 +9,6 @@ import {
 } from 'react-native'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { FormButton, QuestionItem, ResultModal } from '../../components'
-import { COLORS } from '../../constants/theme'
 import { axiosInstance } from '../../utils/axiosInstance'
 
 const shuffleAnswers = question => {
@@ -122,7 +121,9 @@ export const PlayQuizScreen = ({ navigation, route }) => {
           )}
         />
       ) : (
-        <Text style={[styles.text,{color:"blue"}]}>The question list is empty.</Text>
+        <Text style={[styles.text, { color: 'blue' }]}>
+          The question list is empty.
+        </Text>
       )}
 
       {/* Result Modal */}
