@@ -63,52 +63,6 @@ export const HomeScreen = ({ navigation }) => {
       </View>
 
       {loading ? (
-        // <SkeletonPlaceholder>
-        //   {/* <SkeletonPlaceholder.Item width={120} height={20} borderRadius={4} /> */}
-        //   <SkeletonPlaceholder.Item
-        //     flexDirection="row"
-        //     alignItems="center"
-        //     speed
-        //   >
-        //     <SkeletonPlaceholder.Item
-        //       width={180}
-        //       height={280}
-        //       borderRadius={10}
-        //       direction="left"
-        //       marginTop={20}
-        //     />
-        //     <SkeletonPlaceholder.Item
-        //       width={180}
-        //       height={280}
-        //       borderRadius={10}
-        //       direction="right"
-        //       marginLeft={20}
-        //       marginTop={20}
-        //     />
-        //   </SkeletonPlaceholder.Item>
-
-        //   <SkeletonPlaceholder.Item
-        //     flexDirection="row"
-        //     alignItems="center"
-        //     speed
-        //   >
-        //     <SkeletonPlaceholder.Item
-        //       width={180}
-        //       height={280}
-        //       borderRadius={10}
-        //       direction="left"
-        //       marginTop={20}
-        //     />
-        //     <SkeletonPlaceholder.Item
-        //       width={180}
-        //       height={280}
-        //       borderRadius={10}
-        //       direction="right"
-        //       marginLeft={20}
-        //       marginTop={20}
-        //     />
-        //   </SkeletonPlaceholder.Item>
-        // </SkeletonPlaceholder>
         <Text style={styles.text}>Loading...</Text>
       ) : (
         
