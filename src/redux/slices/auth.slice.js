@@ -1,4 +1,4 @@
-import { SIGN_IN, SIGN_UP, SIGN_OUT } from '../contants'
+import { SIGN_IN, SIGN_UP, SIGN_OUT } from '../constants'
 
 const authState = {
   user: null,
