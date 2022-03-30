@@ -2,40 +2,54 @@ import React, { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
-import { useDispatch } from 'react-redux'
 import { View, Text, SafeAreaView, StyleSheet } from 'react-native'
 import { FormButton, FormInput } from '../../components'
+import { useSelector, useDispatch } from 'react-redux'
+import { authSelector } from '../../redux/selector'
 import { axiosInstance } from '../../utils/axiosInstance'
-import { register } from '../../redux/actions'
+import { createQuiz } from '../../redux/actions'
 import * as Animatable from 'react-native-animatable'
 
-const registerSchema = yup.object({
-  name: yup.string().required().label('Name'),
-  email: yup.string().email().required().label('Email'),
-  password: yup.string().min(4).required().label('Password'),
+const quizSchema = yup.object({
+  title: yup.string().required().label('Title'),
+  description: yup.string().label('Descriptionn'),
 })
-
 const defaultValues = {
-  name: '',
-  email: '',
-  password: '',
+  title: '',
+  description: '',
 }
-
-export const SignUpScreen = ({ navigation }) => {
+export const CreateQuizScreen = ({ navigation, route }) => {
+  const { categoryId, categoryTitle } = route.params
   const {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm({ defaultValues, resolver: yupResolver(registerSchema) })
+  } = useForm({ defaultValues, resolver: yupResolver(quizSchema) })
+  const [error, setError] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
 
+  const { token } = useSelector(authSelector)
   const dispatch = useDispatch()
-  const onSubmit = async values => {
+  const onQuizSave = async quizData => {
     try {
       setLoading(true)
-      const { data } = await axiosInstance.post('/auth/register', values)
-      dispatch(register(data))
+      // Call api create quiz
+      const { data } = await axiosInstance.post(
+        '/quizzes',
+        { ...quizData, category: categoryId },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
+
+      // dispatch create quiz action
+      dispatch(createQuiz(data))
+
+      // Navige add question screen
+      navigation.navigate('AddQuestionScreen', {
+        quizId: data.id,
+        quizTitle: data.title,
+      })
       setLoading(false)
     } catch (error) {
       const message = error?.response
@@ -50,89 +64,70 @@ export const SignUpScreen = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.text_header}>Sign Up!</Text>
+        <Text style={styles.text_header_sm}>
+          New Quiz
+          <Text style={styles.text_header}>{categoryTitle}!</Text>
+        </Text>
       </View>
       <Animatable.View
         animation='fadeInUpBig'
-        style={[
-          styles.footer,
-          {
-            backgroundColor: 'white',
-          },
-        ]}
+        style={[styles.footer, { backgroundColor: 'white' }]}
       >
         <View style={styles.action}>
           {/* Error message */}
           {!!error && <Text style={styles.error}>{error}</Text>}
 
-          {/* Full Name */}
+          {/* Title */}
           <Controller
             control={control}
+            name='title'
             render={({ field: { onChange, onBlur, value } }) => (
               <FormInput
-                labelText='Full Name'
-                placeholderText='Enter your name'
+                labelText='Title'
+                placeholderText='Enter quiz title'
                 value={value}
                 onBlur={onBlur}
                 onChangeText={onChange}
-                error={errors.name}
+                error={errors.title}
               />
             )}
-            name='name'
-          />
-          {/* Email */}
-          <Controller
-            control={control}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <FormInput
-                labelText='Email'
-                placeholderText='Enter your email'
-                value={value}
-                onBlur={onBlur}
-                onChangeText={onChange}
-                error={errors.email}
-              />
-            )}
-            name='email'
           />
 
-          {/* Password */}
+          {/* Description */}
           <Controller
             control={control}
             render={({ field: { onChange, onBlur, value } }) => (
               <FormInput
-                labelText='Password'
-                placeholderText='Enter password'
+                labelText='Description'
+                placeholderText='Enter quiz description'
                 value={value}
                 onBlur={onBlur}
-                secureTextEntry={true}
                 onChangeText={onChange}
-                error={errors.password}
+                error={errors.description}
               />
             )}
-            name='password'
+            name='description'
           />
         </View>
 
         {/* Submit button */}
         <FormButton
-          labelText='Sign Up'
+          labelText='Save Quiz'
           type='submit'
-          handleOnPress={handleSubmit(onSubmit)}
+          handleOnPress={handleSubmit(onQuizSave)}
           style={{ width: '100%' }}
         />
-        {/* Footer */}
-        <View
-          style={{ flexDirection: 'row', alignItems: 'center', marginTop: 20 }}
-        >
-          <Text>Already have an account?</Text>
-          <Text
-            style={{ marginLeft: 4, color: '#4630EB' }}
-            onPress={() => navigation.navigate('SignInScreen')}
-          >
-            Login
-          </Text>
-        </View>
+
+        <FormButton
+          labelText='Go Back'
+          isPrimary={false}
+          handleOnPress={() => {
+            navigation.goBack()
+          }}
+          style={{
+            marginVertical: 20,
+          }}
+        />
       </Animatable.View>
     </SafeAreaView>
   )
@@ -157,10 +152,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 30,
   },
+  text_header_sm: {
+    color: 'rgb(195,195,195)',
+    fontSize: 26,
+  },
   text_header: {
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 30,
+    marginLeft: 8,
   },
   text_footer: {
     color: '#05375a',
