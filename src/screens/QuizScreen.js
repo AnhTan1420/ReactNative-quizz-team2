@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,22 +9,96 @@ import {
   StyleSheet,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
+import { axiosInstance } from "../../utils/axiosInstance";
 import { COLORS } from "../../constants/theme";
 import { Header } from "../../components";
+import { useDispatch, useSelector } from "react-redux";
+import { authSelector, quizzesSelector } from "../../redux/selector";
+import { addQuizzes } from "../../redux/actions";
+import { QuizItem } from "../../components";
 import banner from "../../../assets/images/banner.png";
 
 export const QuizScreen = ({ navigation, route }) => {
+  const { user } = useSelector(authSelector);
+  const { categoryId, categoryTitle } = route.params;
+  const quizzes = useSelector(quizzesSelector);
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const dispatch = useDispatch();
+
+  const getAllQuizzesByCategory = async () => {
+    try {
+      setLoading(true);
+      const { data } = await axiosInstance.get(
+        `/quizzes?category=${categoryId}`
+      );
+      dispatch(addQuizzes(data));
+      setLoading(false);
+    } catch (error) {
+      const message = error?.response
+        ? error?.response.data.message
+        : error.message;
+      setError(message);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getAllQuizzesByCategory();
+  }, [categoryId, dispatch]);
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#fff" barStyle={"dark-content"} />
 
       {/* Header */}
-      <Header navigation={navigation} />
+      <Header navigation={navigation} text={categoryTitle} />
 
       {/* Banner */}
       <View style={styles.banner}>
         <Image source={banner} style={{ width: 250, height: 250 }} />
       </View>
+
+      {/* Body */}
+      {!!error ? (
+        <>
+          {/* Error message */}
+          <Text style={styles.error}>{error}</Text>
+        </>
+      ) : loading ? (
+        <Text style={styles.text}>loading...</Text>
+      ) : quizzes.length > 0 ? (
+        <View style={styles.itemsContainer}>
+          {/* Quizzes list */}
+          <FlatList
+            data={quizzes}
+            showsVerticalScrollIndicator={true}
+            style={{
+              paddingVertical: 20,
+            }}
+            renderItem={({ item, index }) => (
+              <View style={styles.quizItems}>
+                {/* STT */}
+                <View>
+                  {index < 9 ? (
+                    <Text style={styles.number}>{"0" + (index + 1)}</Text>
+                  ) : (
+                    <Text style={styles.number}>{index + 1}</Text>
+                  )}
+                </View>
+                {/* Quiz Item */}
+                <View style={{ flex: 1 }}>
+                  <QuizItem quiz={item} navigation={navigation} />
+                </View>
+              </View>
+            )}
+            keyExtractor={(item) => item.id}
+          />
+        </View>
+      ) : (
+        <Text style={styles.text}>The quizzes list is empty.</Text>
+      )}
 
       {/* Button New  */}
       {user?.role === "Admin" && (
