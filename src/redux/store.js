@@ -1,16 +1,19 @@
 import { createStore } from 'redux'
 import { combineReducers } from 'redux'
-import { 
+import {
   authReducer,
+  quizzesReducer,
   categoriesReducer,
   filtersReducer,
- } from './slices/auth.slice'
+  userssReducer,
+} from './slices'
 
 const reducer = combineReducers({
   auth: authReducer,
   quizzes: quizzesReducer,
   categories: categoriesReducer,
   filters: filtersReducer,
+  users: userssReducer,
 })
 
 export const store = createStore(reducer)
