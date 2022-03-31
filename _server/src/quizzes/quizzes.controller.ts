@@ -1,42 +1,54 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose from 'mongoose';
-import { Document } from 'mongoose';
-import { Category } from 'src/categories/schemas/category.schema';
-import { User } from 'src/user/schemas/user.schema';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  HttpCode,
+  UseGuards,
+  Query,
+} from '@nestjs/common';
+import { QuizzesService } from './quizzes.service';
+import { CreateQuizDto } from './dto/create-quiz.dto';
+import { UpdateQuizDto } from './dto/update-quiz.dto';
+import { GetCurrentUserId } from 'src/common/decorators';
+import { AuthGuard } from '@nestjs/passport';
+import { ApiTags } from '@nestjs/swagger';
 
-export type QuizDocument = Quiz & Document;
+@ApiTags('Quizzes')
+@Controller('quizzes')
+export class QuizzesController {
+  constructor(private readonly quizzesService: QuizzesService) {}
 
-@Schema({
-  timestamps: true,
-  toJSON: {
-    transform(doc, ret) {
-      ret.id = ret._id.toString();
-      delete ret._id;
-      delete ret.__v;
-      return ret;
-    },
-  },
-})
-export class Quiz {
-  @Prop({ required: true, type: String, trim: true })
-  title: string;
+  @UseGuards(AuthGuard('jwt'))
+  @Post()
+  create(
+    @Body() createQuizDto: CreateQuizDto,
+    @GetCurrentUserId() userId: string,
+  ) {
+    return this.quizzesService.create(userId, createQuizDto);
+  }
 
-  @Prop({ type: String, trim: true })
-  description: string;
+  @Get()
+  findAll(@Query() query) {
+    return this.quizzesService.findAll(query);
+  }
 
-  @Prop({
-    type: mongoose.Schema.Types.ObjectId,
-    ref: Category.name,
-    required: true,
-  })
-  category: Category;
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.quizzesService.findOne(id);
+  }
 
-  @Prop({
-    type: mongoose.Schema.Types.ObjectId,
-    ref: User.name,
-    required: true,
-  })
-  createdBy: User;
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateQuizDto: UpdateQuizDto) {
+    return this.quizzesService.update(id, updateQuizDto);
+  }
+
+  @HttpCode(204)
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.quizzesService.remove(id);
+  }
 }
-
-export const QuizSchema = SchemaFactory.createForClass(Quiz);

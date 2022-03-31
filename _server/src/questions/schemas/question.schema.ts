@@ -25,10 +25,16 @@ export class Question {
   quiz: Quiz;
 
   @Prop({ type: String, required: true, trim: true })
+  question: string;
+
+  @Prop({ type: String, required: true, trim: true })
   correctAnswer: string;
 
   @Prop({ type: [String], required: true })
   incorrectAnswers: string[];
+
+  @Prop({ type: String, required: true })
+  image: string;
 }
 
 export const QuestionSchema = SchemaFactory.createForClass(Question);
