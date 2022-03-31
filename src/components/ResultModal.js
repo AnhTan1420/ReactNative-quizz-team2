@@ -1,6 +1,6 @@
-import React from "react";
-import { View, Text, Modal, TouchableOpacity, StyleSheet } from "react-native";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import React from 'react'
+import { View, Text, Modal, TouchableOpacity, StyleSheet } from 'react-native'
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 
 export const ResultModal = ({
   isModalVisible,
@@ -13,7 +13,7 @@ export const ResultModal = ({
 }) => {
   return (
     <Modal
-      animationType={"slide"}
+      animationType={'slide'}
       transparent={true}
       visible={isModalVisible}
       onRequestClose={handleOnClose}
@@ -23,13 +23,13 @@ export const ResultModal = ({
           <Text style={styles.title}>Results</Text>
           <View style={styles.result}>
             <View style={styles.resultTextContainer}>
-              <Text style={[styles.resultText, { color: "#00C851" }]}>
+              <Text style={[styles.resultText, { color: '#00C851' }]}>
                 {correctCount}
               </Text>
               <Text style={{ fontSize: 16 }}>Correct</Text>
             </View>
             <View style={styles.resultTextContainer}>
-              <Text style={[styles.resultText, { color: "#ff4444" }]}>
+              <Text style={[styles.resultText, { color: '#ff4444' }]}>
                 {incorrectCount}
               </Text>
               <Text style={{ fontSize: 16 }}>Incorrect</Text>
@@ -41,61 +41,61 @@ export const ResultModal = ({
 
           {/* Try agian */}
           <TouchableOpacity
-            style={[styles.button, { backgroundColor: "#4630EB" }]}
+            style={[styles.button, { backgroundColor: '#4630EB' }]}
             onPress={handleRetry}
           >
-            <MaterialIcons name="replay" style={{ color: "#FFFFFF" }} />
+            <MaterialIcons name='replay' style={{ color: '#FFFFFF' }} />
             <Text style={styles.butonText}>Try Again</Text>
           </TouchableOpacity>
           {/* Go Home */}
           <TouchableOpacity
-            style={[styles.button, { backgroundColor: "#4630EB" + "20" }]}
+            style={[styles.button, { backgroundColor: '#4630EB' + '20' }]}
             onPress={handleHome}
           >
-            <MaterialIcons name="home" style={{ color: "#4630EB" }} />
-            <Text style={[styles.butonText, { color: "#4630EB" }]}>
+            <MaterialIcons name='home' style={{ color: '#4630EB' }} />
+            <Text style={[styles.butonText, { color: '#4630EB' }]}>
               Go Home
             </Text>
           </TouchableOpacity>
         </View>
       </View>
     </Modal>
-  );
-};
+  )
+}
 const styles = StyleSheet.create({
   modalBodyContainer: {
     flex: 1,
-    backgroundColor: "#171717" + "90",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: '#171717' + '90',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   modalContentContainer: {
-    backgroundColor: "#FFFFFF",
-    width: "90%",
+    backgroundColor: '#FFFFFF',
+    width: '90%',
     borderRadius: 5,
     padding: 40,
-    alignItems: "center",
+    alignItems: 'center',
   },
   result: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
-  resultTextContainer: { alignItems: "center", padding: 20 },
-  resultText: { color: "black", fontSize: 30 },
-  title: { fontSize: 28, color: "#171717" },
+  resultTextContainer: { alignItems: 'center', padding: 20 },
+  resultText: { color: 'black', fontSize: 30 },
+  title: { fontSize: 28, color: '#171717' },
   button: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingVertical: 10,
-    width: "100%",
+    width: '100%',
     marginTop: 20,
     borderRadius: 50,
   },
   butonText: {
-    textAlign: "center",
-    color: "#FFFFFF",
+    textAlign: 'center',
+    color: '#FFFFFF',
     marginLeft: 10,
   },
-});
+})

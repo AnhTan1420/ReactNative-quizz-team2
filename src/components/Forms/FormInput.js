@@ -1,6 +1,5 @@
 import React from 'react'
 import { View, Text, TextInput } from 'react-native'
-import { COLORS } from '../../constants/theme'
 
 export const FormInput = ({
   labelText = '',
@@ -12,15 +11,22 @@ export const FormInput = ({
 }) => {
   return (
     <View style={{ width: '100%', marginBottom: 20 }}>
-      <Text>{labelText}</Text>
+      <Text
+        style={{
+          fontSize: 16,
+        }}
+      >
+        {labelText}
+      </Text>
       <TextInput
         style={{
           padding: 10,
-          borderColor: !error ? COLORS.black + '20' : 'red',
+          borderColor: !error ? '#d3d3d3' : 'red',
           borderWidth: 1,
           width: '100%',
           borderRadius: 5,
           marginTop: 10,
+          fontSize: 16,
         }}
         placeholder={placeholderText}
         onChangeText={onChangeText}
